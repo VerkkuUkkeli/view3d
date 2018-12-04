@@ -63,7 +63,7 @@ class Renderer:
 				# self.__stdscr.getkey()
 				v1 = final_vertices[f[i-1]]
 				v2 = final_vertices[f[i]]
-				self.draw_line(v1, v2)
+				self.draw_line(v1, v2, color_str='green')
 
 		self.__stdscr.refresh()
 
@@ -75,9 +75,9 @@ class Renderer:
 		if color_str == 'red':
 			color = curses.color_pair(1)
 		if color_str == 'green':
-			color = curses.color_pair(1)
+			color = curses.color_pair(2)
 		if color_str == 'blue':
-			color = curses.color_pair(1)
+			color = curses.color_pair(3)
 
 		# make sure x and y are integers
 		x = int(x)
@@ -91,7 +91,7 @@ class Renderer:
 
 
 	# draw a line between p1 and p2
-	def draw_line(self, p1, p2):
+	def draw_line(self, p1, p2, symbol='*', color_str='white'):
 		x1 = int(p1[0])
 		x2 = int(p2[0])
 		y1 = int(p1[1])
@@ -107,14 +107,14 @@ class Renderer:
 		if 0 < np.abs(dx) < np.abs(dy):
 			for y in range(y1, y2, np.sign(dy)):
 				x = int(dx/dy*(y-y1) + x1)
-				self.draw_point(x, y)
+				self.draw_point(x, y, symbol, color_str)
 		elif 0 < np.abs(dy) < np.abs(dx):
 			for x in range(x1, x2, np.sign(dx)):
 				y = int(dy/dx*(x-x1) + y1)
-				self.draw_point(x, y)
+				self.draw_point(x, y, symbol, color_str)
 		elif np.abs(dx) == 0:
 			for y in range(y1, y2, np.sign(dy)):
-				self.draw_point(x1, y)
+				self.draw_point(x1, y, symbol, color_str)
 		elif np.abs(dy) == 0:
 			for x in range(x1, x2, np.sign(dx)):
-				self.draw_point(x, y1)
+				self.draw_point(x, y1, symbol, color_str)
