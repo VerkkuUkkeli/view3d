@@ -1,6 +1,7 @@
 import numpy as np
 from numpy import sin, cos
 
+
 # return length of x, y, z components of 4-vector
 def norm4(v):
     return np.sqrt(v[0]**2 + v[1]**2 + v[2]**2)
@@ -38,7 +39,8 @@ def look_at(eye, up):
 
     return R@T
 
-"""
+
+# perspective projection matrix
 def perspective(fovy, aspect, znear, zfar):
     theta = fovy/2
     d = 1/np.tan(theta)
@@ -54,25 +56,9 @@ def perspective(fovy, aspect, znear, zfar):
     ])
 
     return M
-"""
-def perspective(fovy, aspect, znear, zfar):
-    ymax = znear * np.tan(fovy * np.pi / 180.0)
-    xmax = ymax*aspect
 
-    temp1 = 2*znear
-    temp2 = 2*xmax
-    temp3 = 2*ymax
-    temp4 = zfar - znear
 
-    M = np.array([
-        [temp1/temp2, 0, 0, 0],
-        [0, temp1/temp3, 0, 0],
-        [0, 0, (-zfar - znear)/temp4, (-temp1*zfar)/temp4],
-        [0, 0, -1.0, 0],
-    ])
-
-    return M
-
+# viewport transformation matrix
 def viewport(left, right, bottom, top):
     M = np.array([
         [(right-left)/2, 0, 0, (right+left)/2],
