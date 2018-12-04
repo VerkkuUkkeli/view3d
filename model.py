@@ -1,8 +1,11 @@
 import numpy as np
 
 class Model:
+	# location, rotation, scale
+	loc 	= np.array([0, 0, 0], dtype=np.float32)
+	rot 	= np.array([0, 0, 0], dtype=np.float32)
+	scale 	= np.array([1, 1, 1], dtype=np.float32)
 
-	orientation = np.array([0, 0, 0], dtype=np.float32)
 	vertices = np.array([
 		# lower vertices
 		np.array([1, -1, -1, 1], dtype=np.float32),

@@ -16,6 +16,14 @@ def cross4(v1, v2):
     v3 = np.cross(v1[:-1], v2[:-1])
     return np.array([v3[0], v3[1], v3[2], 1])
 
+# sin mapped to range [0, 1]
+def usin(rad):
+    return (np.sin(rad)+1)/2
+
+# cos mapped to range [0, 1]
+def ucos(rad):
+    return (np.cos(rad)+1)/2
+
 # eye is the position vector of the camera in world frame
 # up denotes camera up vector (direction of camera space y vector in world frame)
 def look_at(eye, up):

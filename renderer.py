@@ -32,11 +32,14 @@ class Renderer:
 
 	def render(self, model):
 		# compute transformation matrix from object space to screen space
-		R = rotation_matrix(model.orientation[0], model.orientation[1], model.orientation[2])	# rotation matrix
+		T = translation_matrix(model.loc)														# translation matrix
+		S = scale_matrix(model.scale)															# scaling matrix
+		R = rotation_matrix(model.rot[0], model.rot[1], model.rot[2])							# rotation matrix
 		L = look_at(self.__eye, self.__up)														# gluLookAt (camera transform)
 		P = perspective(45, self.__aspect/1.9, 0.1, 10)											# gluPerspective (projective transformation)
+		V = viewport(0, self.__width, 0, self.__height)
 
-		M = P @ L @ R  # resultant transformation matrix
+		M = P @ L @ T @ R @ S  # resultant transformation matrix
 
 		# compute normalised device coordinates
 		normalised = []
@@ -52,18 +55,16 @@ class Renderer:
 					continue
 				if n[i] >= 1.0:
 					continue
-			final_vertices.append(viewport(0, self.__width, 0, self.__height) @ n)
+			final_vertices.append(V @ n)
 
 		# draw lines at face edges for vertices in world space
 		for v in final_vertices:
 			self.draw_point(v[0], v[1], symbol='#', color_str='red')
 		for f in model.faces:
 			for i in range(len(f)):
-				self.__stdscr.addstr(0, 0, "Debug: {}".format(final_vertices))
-				# self.__stdscr.getkey()
 				v1 = final_vertices[f[i-1]]
 				v2 = final_vertices[f[i]]
-				self.draw_line(v1, v2, color_str='green')
+				self.draw_line(v1, v2, color_str='red')
 
 		self.__stdscr.refresh()
 
@@ -84,7 +85,7 @@ class Renderer:
 		y = int(y)
 
 		# return if point is out of screen coordinates
-		if y >= self.__height or y < 0 or x >= self.__width or x < 0:
+		if y >= self.__height or y < 0 or x >= self.__width-1 or x < 0:
 			return
 
 		self.__stdscr.addstr(y, x, symbol, color)
@@ -104,17 +105,30 @@ class Renderer:
 
 		# check which axis has the most steps and loop over it
 		# use linear interpolation to determine the other component
-		if 0 < np.abs(dx) < np.abs(dy):
+
+		# draw a point
+		if dx == 0 and dy == 0:
+			self.draw_point(x1, y2, symbol, color_str)
+		# y axis has more steps
+		elif 0 < np.abs(dx) < np.abs(dy):
 			for y in range(y1, y2, np.sign(dy)):
 				x = int(dx/dy*(y-y1) + x1)
 				self.draw_point(x, y, symbol, color_str)
+		# equal number of steps
+		elif dy == dx:
+			for y in range(y1, y2, np.sign(dy)):
+				x = int(dx/dy*(y-y1) + x1)
+				self.draw_point(x, y, symbol, color_str)
+		# x has more steps
 		elif 0 < np.abs(dy) < np.abs(dx):
 			for x in range(x1, x2, np.sign(dx)):
 				y = int(dy/dx*(x-x1) + y1)
 				self.draw_point(x, y, symbol, color_str)
+		# vertical line
 		elif np.abs(dx) == 0:
 			for y in range(y1, y2, np.sign(dy)):
 				self.draw_point(x1, y, symbol, color_str)
+		# horizontal line
 		elif np.abs(dy) == 0:
 			for x in range(x1, x2, np.sign(dx)):
 				self.draw_point(x, y1, symbol, color_str)
